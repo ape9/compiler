@@ -14,18 +14,14 @@ std::vector<std::unique_ptr<Token>> Lexer::createTokens() {
             continue;
         }
         else if (isalpha(_currentChar) || _currentChar == '_') {
-            // Identified
             tokens.push_back(createIdent());
         }
         else if (isdigit(_currentChar)) {
-            // Number
+            tokens.push_back(createNumber());
         }
         else {
-            // Other tokens
-        // Move to next character
-        next();        
+            tokens.push_back(createOther());      
         }
-
     }
 
     return std::move(tokens);
@@ -61,12 +57,41 @@ std::unique_ptr<Token> Lexer::createIdent() {
     return std::make_unique<Token>(TokenType::IDENTIFIER, value, _currentLocation);
 }
 
-std::unique_ptr<Token> createNumber() {
+std::unique_ptr<Token> Lexer::createNumber() {
+    std::string value;
+    bool hasColon = false;
 
+    while (isdigit(_currentChar) || (_currentChar == '.' && !hasColon)) {
+        if (_currentChar == '.') {
+            // float
+            hasColon = true;
+        }
+
+        value += _currentChar;
+        next();
+    }
+
+    return std::make_unique<Token>(TokenType::NUMBER, value, _currentLocation);
 }
 
-std::unique_ptr<Token> createOther() {
+std::unique_ptr<Token> Lexer::createOther() {
+    
+    std::unique_ptr<Token> tok = nullptr;
 
+    switch (_currentChar) {
+        case '=':
+            tok = std::make_unique<Token>(TokenType::EQUAL, "=", _currentLocation);
+            break;
+        default:
+            // Should never get here
+            std::cout << _currentChar << std::endl;
+            assert(false);
+            break;
+    }
+        
+    next();
+
+    return tok;
 }
 
 

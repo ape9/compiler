@@ -17,6 +17,8 @@ enum class TokenType {
     RSQUARE,
     LCURLY,
     RCURLY,
+
+    EQUAL
 };
 
 struct Token {

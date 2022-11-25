@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <memory>
+#include <cassert>
 
 #ifdef DEBUG
 
@@ -12,10 +13,6 @@
 
 
 namespace frontend {
-
-//struct Token;
-
-//using std::vector<std::unique_ptr<Token>> = TokenVector;
 
 
 }
