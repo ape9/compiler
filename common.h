@@ -4,6 +4,8 @@
 #include <vector>
 #include <memory>
 #include <cassert>
+#include <string>
+#include "location.h"
 
 #ifdef DEBUG
 
