@@ -1,23 +1,24 @@
 #ifndef CODEGEN_H_
 #define CODEGEN_H_
 #include "common.h"
+#include "ast.h"
 
-class Codegenerator {
+namespace frontend {
+
+
+class Codegen {
 public:
-    Codegenerator();
-    Codegenerator(const std::string& outFile);
-    ~Codegenerator();
+    Codegen();
+    Codegen(const std::string& outFile);
 
     void generate();
 
 private:
-    void genDeclarations();
-    void genFuncDefinitions();
-
-private:
-
+    class CodegenImpl;
+    CodegenImpl *_pImpl;
 };
 
+}
 
 
 #endif

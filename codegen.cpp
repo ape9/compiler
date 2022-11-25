@@ -1,41 +1,46 @@
 
+#include "codegen.h"
 #include "common.h"
+#include "ast.h"
+#include <fstream>
 
-namespace {
+namespace frontend {
 
 #define GEN(data) 
 
-// Generates C standard headers and some other stuff
-static void gen_headers() {
-    GEN("// Automatically generated file, do not modify!");
-    GEN("#include <stdio.h>");
-    GEN("#include <stdint.h>");
-    GEN("#include <stdlib.h>");
-    GEN("#include <stdio.h>");
-}
+struct CodegenImpl {
 
-// Generates forward declarations
-static void gen_declarations() {
+    std::ofstream _file;
 
-}
+    CodegenImpl(const std::string& outFile) {
+        _file = std::ofstream(outFile);
+    } 
 
-// Generates standard library
-static void gen_stdlib() {
+    template <class Line, class ...Args>
+    void write(const Line& line, Args... args) {
+        (_file << line << ...);
+    }
 
-}
+    void writeLine(const std::string& line) {
+        write(line, "\n");
+    }
 
-// Generates a single function definition.
-//static void gen_function(std::unique_ptr<Function> func) {
-//}
+    void genHeaders() {
 
-// Generates user defined functions
-static void gen_functions() {
+    }
 
-}
+    void genDeclarations() {
 
+    }
+    void genFuncDefinitions() {
 
-static void gen_entrypoint() {
-
-}
+    }
+    
+    void genVariable(std::unique_ptr<Assignment> assignment) {
+        write(assignment->name);
+        write("=");
+        writeLine(assignment->value);
+    }
+};
 
 }
