@@ -15,8 +15,8 @@ public:
     std::vector<std::unique_ptr<ast_node>> parse();
 
 private:
-    class impl;
-    std::unique_ptr<impl> _pImpl;
+    class parser_impl;
+    std::unique_ptr<parser_impl> _pImpl;
 };
 }
 

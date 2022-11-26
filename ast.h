@@ -5,6 +5,7 @@
 #include "visitor.h"
 
 namespace frontend {
+//namespace ast
 
 enum class node_type {
     EXPR,
@@ -20,6 +21,27 @@ struct ast_node {
 };
 
 struct expression : public ast_node {
+};
+
+struct number : public expression {
+    number(const std::string& val) 
+        : value(val) {}
+    
+    std::string value;
+};
+
+struct bin_expr : public expression {
+    bin_expr(
+        std::unique_ptr<expression> l,
+        std::unique_ptr<expression> r,
+        const std::string& o
+    ) : left(std::move(l)),
+        right(std::move(r)),
+        op(o) {}
+
+    std::unique_ptr<expression> left; 
+    std::unique_ptr<expression> right;
+    std::string op;
 };
 
 struct statement : public ast_node {
@@ -49,8 +71,6 @@ struct fn_args : public statement {
 struct fn_def : public statement {
     fn_def(const std::string& nam, 
         std::vector<std::unique_ptr<fn_args>>);
-
-
 };
 
 

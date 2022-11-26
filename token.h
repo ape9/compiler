@@ -18,10 +18,13 @@ enum class TokenType {
     LCURLY,
     RCURLY,
 
-    EQUAL
+    EQUAL,
+
+    ENDTOKEN
 };
 
 struct Token {
+    Token() = default;
     Token(TokenType typ, const std::string& value, const utils::Location& location) 
         : _typ(typ), _value(value), _location(location) {}
     
@@ -29,8 +32,20 @@ struct Token {
         std::cout << tok._value;
         return os;
     }
+
+    inline bool operator==(const Token& other) {
+        return other._typ == _typ;
+    }
     
     void dump();
+
+    std::string value() const {
+        return _value;
+    }
+
+    TokenType type() const {
+        return _typ;
+    }
 
     TokenType _typ;
     std::string _value;
