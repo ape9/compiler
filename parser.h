@@ -3,25 +3,21 @@
 
 #include "common.h"
 #include "ast.h"
+#include "token.h"
+#include <iostream>
 
 namespace frontend {
+class parser {
+public:
+    parser() = default;
+    parser(const std::vector<Token>& toks);
 
-struct ParsingState {
-    std::string file;
-    int level;
-};
-
-class Parser {
+    std::vector<std::unique_ptr<ast_node>> parse();
 
 private:
-    ParsingState _parsingState;
-
+    class impl;
+    std::unique_ptr<impl> _pImpl;
 };
-
-
-std::unique_ptr<Expression> parseExpression();
-std::unique_ptr<Statement> parseStatement();
-
 }
 
 

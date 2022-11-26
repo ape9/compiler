@@ -13,6 +13,13 @@
 #define DPRINT(x) std::cout << x << '\n';
 #endif
 
+namespace utils {
+
+struct CompilerOptions {
+
+};
+
+}
 
 namespace frontend {
 

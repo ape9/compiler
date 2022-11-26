@@ -1,10 +1,8 @@
 #ifndef CODEGEN_H_
 #define CODEGEN_H_
 #include "common.h"
-#include "ast.h"
 
 namespace frontend {
-
 
 class Codegen {
 public:
@@ -14,8 +12,8 @@ public:
     void generate();
 
 private:
-    class CodegenImpl;
-    CodegenImpl *_pImpl;
+    class Impl;
+    std::unique_ptr<Impl> _pImpl;
 };
 
 }
