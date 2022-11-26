@@ -29,6 +29,11 @@ public:
     // Main method to create a list of tokens from source code
     std::vector<std::unique_ptr<Token>> createTokens();
 
+    static void print_tokens(std::vector<std::unique_ptr<Token>> toks) {
+        for (auto& tok : toks) {
+            tok->dump();
+        }
+    }
 
 private:
     // Peek forward n characters
@@ -54,7 +59,6 @@ private:
     // Number of read characters
     uint32_t _charCount;
 };
-
 
 
 }

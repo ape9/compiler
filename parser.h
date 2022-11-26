@@ -10,7 +10,8 @@ namespace frontend {
 class parser {
 public:
     parser() = default;
-    parser(const std::vector<Token>& toks);
+    parser(std::vector<std::unique_ptr<Token>> toks);
+    ~parser();
 
     std::vector<std::unique_ptr<ast_node>> parse();
 

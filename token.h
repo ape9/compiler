@@ -20,6 +20,22 @@ enum class TokenType {
 
     EQUAL,
 
+    // standard types
+    VOID,
+    INT8,
+    UINT8,
+    INT16,
+    UINT16,
+    INT32,
+    UINT32,
+    INT64,
+    UINT64,
+    STRING,
+
+    CLASS,
+    PRIVATE,
+    PUBLIC,
+
     ENDTOKEN
 };
 

@@ -1,32 +1,33 @@
 #include "parser.h"
-
+#include "lexer.h"
 
 namespace frontend {
-
-struct parsing_state {
-    parsing_state() : location(utils::Location()) {}
-    parsing_state(const utils::Location& l, int d) 
-        : location(l), depth(d) {}
-
-    utils::Location location;
-    int depth;
-    Token current_token;
-
-    std::ostream& operator<<(std::ostream& os) {
-        std::cout << "Parsing state " << location._fileName << " depth: " 
-            << depth << '\n';
-        return os;
-    }
-};
 
 template <typename T>
 using uptr = std::unique_ptr<T>;
 
+struct parsing_state {
+    parsing_state() = default;
+    parsing_state(std::vector<uptr<Token>> toks) 
+        :  tokens(std::move(toks)), count(0)
+    {
+        location = tokens[0]->_location;
+        current_token = *tokens[0];
+    } 
+
+    std::vector<uptr<Token>> tokens;
+    int count;
+    utils::Location location;
+    Token current_token;
+};
+
 class parser::parser_impl {
 public:
     parser_impl() = default;
-    parser_impl(std::vector<Token>& tokens) 
-        : _tokens(tokens) {}
+    parser_impl(std::vector<uptr<Token>> tokens) {
+        _state = parsing_state(std::move(tokens));
+    }
+        //: _state(std::move(tokens)) {}
 
     std::vector<uptr<ast_node>> parse_impl();
 
@@ -51,11 +52,19 @@ public:
     }
 
     Token peek() {
-        
+        Token tok;
+        if (_state.count < _state.tokens.size()) {
+            tok = *(_state.tokens[_state.count + 1]);
+        }
+        return tok;
     }
     
     void next() {
-        
+        if (_state.count <= _state.tokens.size()) {
+            _state.count++;
+            _state.current_token = *(_state.tokens[_state.count]);
+            _state.location = _state.tokens[_state.count]->_location;
+        }
     }
 
     bool maybe_expression(const Token& tok) const {
@@ -65,14 +74,11 @@ public:
     }
 
     void skip_until_type(TokenType typ) {
-        while (cur_token_type() != typ) {
-            next();
-        }
+        while (cur_token_type() != typ) { next(); }
     }
 
 private:
     parsing_state _state;
-    std::vector<Token> _tokens;
 };
 
 uptr<statement> 
@@ -101,7 +107,6 @@ parser::parser_impl::parse_var_def() {
     std::string name = cur_token()._value;
     next();
     next();
-    // at expression
     auto value = parse_expression();
 
     return std::make_unique<var_def>(
@@ -142,19 +147,23 @@ parser::parser_impl::parse_bin_expr() {
 std::vector<uptr<ast_node>> 
 parser::parser_impl::parse_impl() {
     std::vector<uptr<ast_node>> ast;
-
+    
     while (cur_token().type() != TokenType::ENDTOKEN) {
+        utils::logger::debug(cur_location(), "Parse loop ");
         ast.push_back(parse_statement());
     }
 
     return ast;
 }
 
-parser::parser(const std::vector<Token>& toks) {
-    _pImpl = std::make_unique<parser_impl>(toks);
+parser::parser(std::vector<uptr<Token>> toks) {
+    _pImpl = std::make_unique<parser_impl>(std::move(toks));
 }
 
+parser::~parser() {}
+
 std::vector<uptr<ast_node>> parser::parse() {
+    utils::logger::debug(_pImpl->cur_location(), "in parser::parse()");
     return _pImpl->parse_impl();
 }
 

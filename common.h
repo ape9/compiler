@@ -10,21 +10,17 @@
 #include <fstream>
 #include "location.h"
 
-#ifdef DEBUG
-#define DPRINT(x) std::cout << x << '\n';
-#endif
-
 namespace utils {
 
 struct CompilerOptions {
-
+    // TODO
 };
 
 enum class logging_level {
     DEBUG, INFO, WARNING, ERROR
 };
 
-std::map<logging_level, std::string> LOGLEVELSTR = {
+static inline std::map<logging_level, std::string> LOGLEVELSTR = {
     { logging_level::DEBUG, "DEBUG"}, 
     { logging_level::INFO, "INFO" }, 
     { logging_level::WARNING, "WARNING" }, 
@@ -62,12 +58,18 @@ struct logger {
         if (level != logging_level::DEBUG) {
             return;
         }
+        if (instant_print) {
+            std::cout << msg << '\n';
+        }
         logs.push_back(log(loc, msg, logging_level::DEBUG));
     }
 
     static void info(const Location& loc, const std::string& msg) {
         if (level == logging_level::DEBUG) {
             return;
+        }
+        if (instant_print) {
+            std::cout << msg << '\n';
         }
         logs.push_back(log(loc, msg, logging_level::INFO));
     }
@@ -76,12 +78,18 @@ struct logger {
         if (level == logging_level::INFO || level == logging_level::DEBUG) {
             return;
         }
+        if (instant_print) {
+            std::cout << msg << '\n';
+        }
         logs.push_back(log(loc, msg, logging_level::WARNING));
         warning_count++;
     }
     
     static void error(const Location& loc, const std::string& msg) {
         if (level == logging_level::ERROR) {
+            if (instant_print) {
+                std::cout << msg << '\n';
+            }
             logs.push_back(log(loc, msg, logging_level::ERROR));
             error_count++;
         }
@@ -101,6 +109,7 @@ struct logger {
     static inline std::vector<log> logs{};
     static inline int error_count{ 0 };
     static inline int warning_count{ 0 };
+    static inline bool instant_print = false;
 };
 
 }

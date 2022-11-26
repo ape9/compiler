@@ -5,10 +5,11 @@
 namespace frontend {
 
 static std::map<TokenType, std::string> TOKENTYPE_TO_STRING = {
-    {TokenType::IDENTIFIER, "IDENTIFIER"},
-    {TokenType::NUMBER, "NUMBER"},
+    { TokenType::IDENTIFIER, "IDENTIFIER" },
+    { TokenType::NUMBER, "NUMBER" },
 
-    {TokenType::EQUAL, "EQUAL"}
+    { TokenType::EQUAL, "EQUAL" },
+    { TokenType::ENDTOKEN, "ENDTOKEN" }
 };
 
 

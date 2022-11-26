@@ -5,10 +5,14 @@ namespace frontend {
 
 std::vector<std::unique_ptr<Token>> Lexer::createTokens() {
 
+    utils::logger::debug(_currentLocation, "Lexer starting");
+
     std::vector<std::unique_ptr<Token>> tokens;
 
     auto fileLength = _fileContent.length();
     while (_charCount != fileLength) {
+        //utils::logger::debug(_currentLocation, "In createTokens() loop");
+
         if (isspace(_currentChar)) {
             next();
             continue;
@@ -23,6 +27,11 @@ std::vector<std::unique_ptr<Token>> Lexer::createTokens() {
             tokens.push_back(createOther());      
         }
     }
+    
+    tokens.push_back(std::make_unique<Token>(
+            TokenType::ENDTOKEN, "", _currentLocation));
+
+    utils::logger::debug(_currentLocation, "Lexer done");
 
     return std::move(tokens);
 }
