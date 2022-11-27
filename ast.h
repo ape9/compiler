@@ -57,7 +57,10 @@ struct var_def : public statement {
         const std::string& nam, 
         std::unique_ptr<expression> val,
         const utils::Location& loc
-    ) : name(nam), value(std::move(val)), location(loc) {}
+    ) : name(nam), value(std::move(val)), location(loc) 
+    {
+        utils::logger::debug(location, "Init var_def " + name);
+    }
 
     // name of the variable
     std::string name;
@@ -76,12 +79,17 @@ struct fn_def : public statement {
     fn_def(const std::string& nam, 
         //std::unique_ptr<fn_args> a,
         std::vector<std::unique_ptr<statement>> b)
-        : name(nam), body(std::move(b)) {}
+        : name(nam), body(std::move(b)) 
+    {
+        utils::logger::debug(location, "Init fn_def " + name);
+    }
 
     std::string name;
     std::vector<std::unique_ptr<fn_args>> args;
     std::vector<std::unique_ptr<statement>> body;
     //std::unique_ptr<expression> retval;
+    utils::Location location;
+    
 };
 
 

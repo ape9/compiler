@@ -113,6 +113,11 @@ parser::parser_impl::parse_var_def() {
     std::string name = cur_token()._value;
     next();
     next();
+    if (maybe_expression(cur_token()) == false) {
+        utils::logger::error(cur_location(), 
+            "Parsing error: expected expression but got " + std::string(cur_token().value()));
+        return nullptr;
+    }
     auto value = parse_expression();
 
     return std::make_unique<var_def>(
@@ -170,7 +175,7 @@ parser::parser_impl::parse_fn_def() {
         body.push_back(parse_statement());
         
     }
-    
+
     // Move from '}'
     next(); 
     return std::make_unique<fn_def>(name, std::move(body));

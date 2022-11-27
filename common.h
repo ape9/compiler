@@ -86,21 +86,33 @@ struct logger {
     }
     
     static void error(const Location& loc, const std::string& msg) {
-        if (level == logging_level::ERROR) {
-            if (instant_print) {
-                std::cout << msg << '\n';
-            }
-            logs.push_back(log(loc, msg, logging_level::ERROR));
-            error_count++;
+        if (level != logging_level::ERROR) {
+            return;
         }
+        if (instant_print) {
+            std::cout << msg << '\n';
+        }
+        std::cout << "HERE!!\n";
+        logs.push_back(log(loc, msg, logging_level::ERROR));
+        error_count++;
     }
 
     static void do_log() {
+        std::ofstream logfile("logs.txt");
         for (auto& msg : logs) {
-            std::cout << msg << '\n';
+            if (output_dest == logging_output::FILE) 
+                logfile << msg << '\n';
+            else if (output_dest == logging_output::STDOUT)
+                std::cout << msg << '\n';
+            else 
+                std::cerr << msg << '\n';
+
         }
-        std::cout << error_count << " error(s).\n";
-        std::cout << warning_count << " warning(s).\n";
+        if (error_count > 0 || warning_count > 0) {
+            std::cout << error_count << " error(s).\n";
+            std::cout << warning_count << " warning(s).\n";
+            std::cout << "Check logs.txt for details.\n";
+        }
     }
 
     static inline logging_level level{ logging_level::ERROR };

@@ -6,19 +6,19 @@
 
 namespace utils {
 
-enum class symbol_type {
+enum class symbol_kind {
     FUNCTION, VARIABLE, CLASS
 };
 
 class table_entry {
 public:
     table_entry() {}
-    table_entry(symbol_type typ) 
+    table_entry(symbol_kind typ) 
         : _type(typ), _module("") {}
 
     virtual ~table_entry() {}
 
-    inline symbol_type get_type() const { 
+    inline symbol_kind get_type() const { 
         return _type; 
     }
 
@@ -30,15 +30,19 @@ public:
         return _parent; 
     }
 
+    bool operator==(const table_entry& other) {
+        return other.get_type() == _type;
+    }
+
 private:
-    symbol_type _type;
+    symbol_kind _type;
     std::string _module;
     std::string _parent;
 };
 
 class var_entry final : public table_entry {
 public:
-    var_entry() : table_entry(symbol_type::VARIABLE) {}
+    var_entry() : table_entry(symbol_kind::VARIABLE) {}
 
     inline std::string get_value() const {
         return _value;
@@ -50,7 +54,7 @@ private:
 
 class fn_entry final : public table_entry {
 public:
-    fn_entry() : table_entry(symbol_type::FUNCTION) {}
+    fn_entry() : table_entry(symbol_kind::FUNCTION) {}
     fn_entry(const std::map<std::string, std::string>& args)
         : _args(args) {}
     
@@ -73,16 +77,14 @@ class class_entry final : public table_entry {
 
 class symbol_table final {
 public:
+    static void add_variable(const std::string& name, const std::string& value);
+    static void add_function(const std::string& name, const std::map<std::string, std::string>& args);
+    static void remove(const std::string& key);
 
-    void add_variable();
-    void add_function();
-    void remove(const std::string& key);
-
-    table_entry get(const std::string& key);
-    table_entry operator[](const std::string& key);
+    static table_entry get(const std::string& key);
 
 private:
-    std::map<std::string, table_entry> _entries;
+    static inline std::map<std::string, table_entry> _entries{};
 };
 
 

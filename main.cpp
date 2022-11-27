@@ -4,10 +4,34 @@
 
 using namespace frontend;
 
+void handle_args(int argc, char **argv) {
+    if (argc < 2) {
+        utils::logger::instant_print = false;
+        utils::logger::level = utils::logging_level::WARNING;
+        utils::logger::output_dest = utils::logging_output::FILE;
+    }
+    else {
+        utils::logger::output_dest = utils::logging_output::FILE;
+        for (auto i = 1; i < argc; i++) {
+            if (strcmp(argv[i], "debug") == 0) {
+                utils::logger::level = utils::logging_level::DEBUG;
+            }
+            if (strcmp(argv[i], "info") == 0) {
+                utils::logger::level = utils::logging_level::INFO;
+            }
+            if (strcmp(argv[i], "warning") == 0) {
+                utils::logger::level = utils::logging_level::WARNING;
+            }
+            if (strcmp(argv[i], "error") == 0) {
+                utils::logger::level = utils::logging_level::ERROR;
+            }
+        }
+    }
+}
+
 int main(int argc, char **argv) {
 
-    utils::logger::instant_print = true;
-    utils::logger::level = utils::logging_level::DEBUG;
+    handle_args(argc, argv);
 
     Lexer l("test.txt");
     auto tokens = l.createTokens();
