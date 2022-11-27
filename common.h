@@ -109,8 +109,9 @@ struct logger {
     static inline std::vector<log> logs{};
     static inline int error_count{ 0 };
     static inline int warning_count{ 0 };
-    static inline bool instant_print = false;
+    static inline bool instant_print { false };
 };
+
 
 }
 
