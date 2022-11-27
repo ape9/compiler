@@ -19,6 +19,10 @@ enum class TokenType {
     RCURLY,
 
     EQUAL,
+    COMMA,
+
+    // reserved keywords
+    FN,
 
     // standard types
     VOID,

@@ -62,8 +62,13 @@ std::unique_ptr<Token> Lexer::createIdent() {
         value += _currentChar;
         next();
     }
-
-    return std::make_unique<Token>(TokenType::IDENTIFIER, value, _currentLocation);
+    
+    if (value == "fn") {
+        return std::make_unique<Token>(TokenType::FN, value, _currentLocation);
+    }
+    else {
+        return std::make_unique<Token>(TokenType::IDENTIFIER, value, _currentLocation);
+    }
 }
 
 std::unique_ptr<Token> Lexer::createNumber() {
@@ -88,8 +93,29 @@ std::unique_ptr<Token> Lexer::createOther() {
     std::unique_ptr<Token> tok = nullptr;
 
     switch (_currentChar) {
+        case '(':
+            tok = std::make_unique<Token>(TokenType::LPAREN, "(", _currentLocation);
+            break;
+        case ')':
+            tok = std::make_unique<Token>(TokenType::RPAREN, ")", _currentLocation);
+            break;
+        case '[':
+            tok = std::make_unique<Token>(TokenType::LSQUARE, "[", _currentLocation);
+            break;
+        case ']':
+            tok = std::make_unique<Token>(TokenType::RSQUARE, "]", _currentLocation);
+            break;
+        case '{':
+            tok = std::make_unique<Token>(TokenType::LCURLY, "{", _currentLocation);
+            break;
+        case '}':
+            tok = std::make_unique<Token>(TokenType::RCURLY, "}", _currentLocation);
+            break;
         case '=':
             tok = std::make_unique<Token>(TokenType::EQUAL, "=", _currentLocation);
+            break;
+        case ',':
+            tok = std::make_unique<Token>(TokenType::COMMA, ",", _currentLocation);
             break;
         default:
             // Should never get here

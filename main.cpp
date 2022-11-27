@@ -6,7 +6,7 @@ using namespace frontend;
 
 int main(int argc, char **argv) {
 
-    utils::logger::instant_print = false;
+    utils::logger::instant_print = true;
     utils::logger::level = utils::logging_level::DEBUG;
 
     Lexer l("test.txt");
@@ -14,7 +14,7 @@ int main(int argc, char **argv) {
     //Lexer::print_tokens(std::move(tokens));
     parser p(std::move(tokens));
     auto a = p.parse();
-    std::cout << "SIZE: " << a.size() << '\n';
+    std::cout << "PARSED: " << a.size() << '\n';
     
     // Write logs
     utils::logger::do_log();

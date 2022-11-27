@@ -21,6 +21,8 @@ struct ast_node {
 };
 
 struct expression : public ast_node {
+    expression() {}
+    virtual ~expression() = default;
 };
 
 struct number : public expression {
@@ -45,6 +47,8 @@ struct bin_expr : public expression {
 };
 
 struct statement : public ast_node {
+    statement() {}
+    virtual ~statement() = default;
 };
 
 // var_def: foo = 100
@@ -70,7 +74,14 @@ struct fn_args : public statement {
 
 struct fn_def : public statement {
     fn_def(const std::string& nam, 
-        std::vector<std::unique_ptr<fn_args>>);
+        //std::unique_ptr<fn_args> a,
+        std::vector<std::unique_ptr<statement>> b)
+        : name(nam), body(std::move(b)) {}
+
+    std::string name;
+    std::vector<std::unique_ptr<fn_args>> args;
+    std::vector<std::unique_ptr<statement>> body;
+    //std::unique_ptr<expression> retval;
 };
 
 

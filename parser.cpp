@@ -84,6 +84,10 @@ private:
 uptr<statement> 
 parser::parser_impl::parse_statement() {
     switch (cur_token_type()) {
+        case TokenType::FN:
+            // function definition
+            return parse_fn_def();
+
         case TokenType::IDENTIFIER: {
             auto next_tok = peek();
             if (next_tok.type() == TokenType::EQUAL) {
@@ -96,6 +100,8 @@ parser::parser_impl::parse_statement() {
             break;
         }
         default:
+            utils::logger::debug(cur_location(), 
+                "parse_statement(): should not be here!! current token: " + std::string(cur_token().value()));
             assert(false);
             break;
     }
@@ -114,8 +120,60 @@ parser::parser_impl::parse_var_def() {
     );
 }
 
+uptr<fn_args> 
+parser::parser_impl::parse_fn_args() {
+    while (cur_token_type() != TokenType::RPAREN) {
+        //if (cur_token_type() != TokenType::IDENTIFIER) {
+
+        //}
+        next();
+    }
+    return nullptr;
+}
+
 uptr<fn_def> 
 parser::parser_impl::parse_fn_def() {
+    // at fn
+    next();
+    if (cur_token_type() != TokenType::IDENTIFIER) {
+        utils::logger::error(cur_location(), 
+            "Parsing error: expected identifier but got " + std::string(cur_token().value()));
+        return nullptr;
+    }
+
+    std::string name = cur_token().value();
+    next();
+
+    if (cur_token_type() != TokenType::LPAREN) {
+        utils::logger::error(cur_location(), 
+            "Parsing error: expected '(' but got " + std::string(cur_token().value()));
+        return nullptr;
+    }    
+
+    next();
+
+    // Go through arguments:
+    uptr<fn_args> args = parse_fn_args();
+
+    next();
+    if (cur_token_type() != TokenType::LCURLY) {
+        utils::logger::error(cur_location(), 
+            "Parsing error: expected '{' but got " + std::string(cur_token().value()));
+        return nullptr;
+    }
+
+    next();
+
+    // Go through function body:
+    std::vector<uptr<statement>> body;
+    while (cur_token_type() != TokenType::RCURLY) {
+        body.push_back(parse_statement());
+        
+    }
+    
+    // Move from '}'
+    next(); 
+    return std::make_unique<fn_def>(name, std::move(body));
 }
 
 uptr<expression> 
