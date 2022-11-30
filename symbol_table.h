@@ -35,6 +35,8 @@ public:
     }
 
 private:
+    std::string _name;
+    std::string _mangled_name;
     symbol_kind _type;
     std::string _module;
     std::string _parent;

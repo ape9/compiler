@@ -12,10 +12,6 @@
 
 namespace utils {
 
-struct CompilerOptions {
-    // TODO
-};
-
 enum class logging_level {
     DEBUG, INFO, WARNING, ERROR
 };
@@ -92,7 +88,6 @@ struct logger {
         if (instant_print) {
             std::cout << msg << '\n';
         }
-        std::cout << "HERE!!\n";
         logs.push_back(log(loc, msg, logging_level::ERROR));
         error_count++;
     }
@@ -106,12 +101,12 @@ struct logger {
                 std::cout << msg << '\n';
             else 
                 std::cerr << msg << '\n';
-
         }
-        if (error_count > 0 || warning_count > 0) {
+        if (error_count > 0) {
             std::cout << error_count << " error(s).\n";
+        }
+        if (warning_count > 0) {
             std::cout << warning_count << " warning(s).\n";
-            std::cout << "Check logs.txt for details.\n";
         }
     }
 

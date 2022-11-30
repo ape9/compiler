@@ -4,6 +4,15 @@
 
 using namespace frontend;
 
+struct compiler_options {
+    // defines name for the output binary
+    std::string out_name;
+
+    // if true, keeps the generated C source file
+    bool keep_c_source;
+};
+
+
 void handle_args(int argc, char **argv) {
     if (argc < 2) {
         utils::logger::instant_print = false;
@@ -38,7 +47,7 @@ int main(int argc, char **argv) {
     //Lexer::print_tokens(std::move(tokens));
     parser p(std::move(tokens));
     auto a = p.parse();
-    std::cout << "PARSED: " << a.size() << '\n';
+    std::cout << "PARSED ast: " << a.size() << '\n';
     
     // Write logs
     utils::logger::do_log();

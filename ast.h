@@ -3,26 +3,58 @@
 
 #include "common.h"
 #include "visitor.h"
+#include "value.h"
 
 namespace frontend {
-//namespace ast
 
-enum class node_type {
+enum class node_kind {
     EXPR,
+    NUMBER,
+    BINEXPR,
     STMT,
+    EXPRSTMT,
     VARDEF,
-    FNDEF
+    FNDEF,
+    FNARGS
 }; 
 
-struct ast_node {
+std::map<node_kind, std::string> node_kind_to_str = {
+    { node_kind::EXPR, "EXPR" },
+    { node_kind::STMT, "STMT" },
+    { node_kind::VARDEF, "VARDEF" }
+};
+
+
+class ast_node {
+public:
+    ast_node() = default;
+    ast_node(const ast_node&) = delete;
+    ast_node(ast_node&&) = delete;
+    
     void accept(Visitor& v) {
         v.visit(*this);
     }
+
+    inline node_kind kind() const { return _kind; }
+    const utils::Location& location() const { return _location; }
+
+protected:
+    explicit ast_node(node_kind kind, utils::Location&& loc) 
+    : _kind(kind), _location(std::move(loc)) {
+        utils::logger::debug(_location, "AST node created: " + node_kind_to_str[kind]);
+    }
+
+private:
+    node_kind _kind;
+    utils::Location _location;
 };
 
-struct expression : public ast_node {
-    expression() {}
+class expression : public ast_node {
+public:
+    expression() : ast_node(node_kind::EXPR) {}
     virtual ~expression() = default;
+
+
 };
 
 struct number : public expression {
@@ -32,24 +64,54 @@ struct number : public expression {
     std::string value;
 };
 
-struct bin_expr : public expression {
+enum class bin_expr_op {
+    PLUS, 
+    MINUS,
+    MUL,
+    DIV
+};
+
+class bin_expr final : public expression {
+public:
     bin_expr(
-        std::unique_ptr<expression> l,
-        std::unique_ptr<expression> r,
-        const std::string& o
-    ) : left(std::move(l)),
-        right(std::move(r)),
-        op(o) {}
+        std::unique_ptr<expression> left,
+        std::unique_ptr<expression> right,
+        bin_expr_op op
+    ) : _left(std::move(left)),
+        _right(std::move(right)),
+        _op(op) {}
 
-    std::unique_ptr<expression> left; 
-    std::unique_ptr<expression> right;
-    std::string op;
+    const expression& left() const { return *_left; }
+    const expression& right() const { return *_right; }
+    const bin_expr_op& op() const { return _op; }
+
+private:
+    std::unique_ptr<expression> _left; 
+    std::unique_ptr<expression> _right;
+    bin_expr_op _op;
 };
 
-struct statement : public ast_node {
-    statement() {}
+class statement : public ast_node {
+public:
+    statement() : ast_node(node_kind::STMT) {}
+    statement(node_kind kind) : ast_node(kind) {}
     virtual ~statement() = default;
+    void accept(Visitor& v) override;
 };
+
+class expression_statement : public statement {
+public:
+    expression_statement(std::unique_ptr<expression> expr) 
+        : statement(node_kind::EXPRSTMT), _expr(std::move(expr)) {}
+
+    void accept(Visitor& v) override;
+
+    const expression& expr() const { return *_expr; }
+    expression& expr() { return *_expr; }
+
+private:
+    std::unique_ptr<expression> _expr;
+}; 
 
 // var_def: foo = 100
 struct var_def : public statement {
@@ -72,10 +134,12 @@ struct var_def : public statement {
 
 };
 
-struct fn_args : public statement {
+class fn_args : public statement {
+public:
+    fn_args() {}
 };
 
-struct fn_def : public statement {
+class fn_def : public statement {
     fn_def(const std::string& nam, 
         //std::unique_ptr<fn_args> a,
         std::vector<std::unique_ptr<statement>> b)
@@ -90,6 +154,16 @@ struct fn_def : public statement {
     //std::unique_ptr<expression> retval;
     utils::Location location;
     
+};
+
+class if_statement final : public statement {
+public:
+    if_statement(
+        std::unique_ptr<expression> condition, 
+        std::unique_ptr<statement> else_block
+    ) {}
+
+
 };
 
 

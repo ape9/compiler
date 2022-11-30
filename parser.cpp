@@ -100,10 +100,10 @@ parser::parser_impl::parse_statement() {
             break;
         }
         default:
-            utils::logger::debug(cur_location(), 
-                "parse_statement(): should not be here!! current token: " + std::string(cur_token().value()));
-            assert(false);
-            break;
+            utils::logger::error(cur_location(), 
+                "Parsing error: expected statement but got " + std::string(cur_token().value()));
+            next();
+            return nullptr;
     }
 }
 
